@@ -5,7 +5,7 @@ import {
   selectSubreddit,
   getRandomPost, 
   backupState, 
-  restoreState
+  restoreState, changePostCheckedState, removePost
 } from '../actions'
 import Posts from '../components/Posts'
 import Button from '../components/Button'
@@ -20,11 +20,11 @@ class AsyncApp extends Component {
 
   componentDidMount() {
     window.onload = (e) => {
-      this.props.dispatch(restoreState())
+      this.props.restoreState()
     };
 
     window.onbeforeunload = (e) => {
-      this.props.dispatch(backupState())
+      this.props.backupState()
       e.preventDefault()
       e.returnValue = ''
     };
@@ -33,8 +33,8 @@ class AsyncApp extends Component {
   componentDidUpdate(prevProps) {}
 
   handleButtonClick(nextSubreddit) {
-    this.props.dispatch(selectSubreddit(nextSubreddit))
-    this.props.dispatch(getRandomPost(nextSubreddit))
+    this.props.selectSubreddit(nextSubreddit)
+    this.props.getRandomPost(nextSubreddit)
   }
 
   render() {
@@ -59,7 +59,11 @@ class AsyncApp extends Component {
       >
         <div>{ buttons }</div>
         <div>
-          <Posts posts={ items } />
+          <Posts 
+            posts={ items } 
+            onPostChecked={this.props.onPostChecked}
+            onPostRemoved={this.props.onPostRemoved}
+          />
         </div>
       </div>
     )
@@ -94,4 +98,28 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(AsyncApp)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    restoreState: () => {
+      dispatch(restoreState())
+    },
+    backupState: () => {
+      dispatch(backupState())
+    },
+    selectSubreddit: (subreddit) => {
+      dispatch(selectSubreddit(subreddit))
+    },
+    getRandomPost: (subreddit) => {
+      dispatch(getRandomPost(subreddit))
+    },
+    onPostChecked: (idx) => {
+      dispatch(changePostCheckedState(idx))
+    },
+    onPostRemoved: (idx) => {
+      dispatch(removePost(idx))
+    }
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(AsyncApp)
