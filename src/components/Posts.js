@@ -10,13 +10,13 @@ import { FixedSizeList as List } from "react-window";
 class ItemRenderer extends PureComponent {
   render() {
     const { data, style, index } = this.props
-    const { posts, dispatch } = data
+    const { posts, onPostCheckedStateChange, onRemovePost } = data
     const post = posts[index];
 
     return (
       <div className={styles.item} style={style} key={index}>
-        <Checker isChecked={post.isChecked} onChange={() => dispatch(changePostCheckedState(index))} />
-        <Deleter onClick={() => dispatch(removePost(index))} />
+        <Checker isChecked={post.isChecked} onChange={() => onPostCheckedStateChange(index)} />
+        <Deleter onClick={() => onRemovePost(index)} />
         <a href={`https://www.reddit.com${post.permalink}`} target="_blank" rel="noopener noreferrer">{post.title}</a>
       </div>
     );
@@ -30,7 +30,11 @@ class Posts extends Component {
           height={550}
           width={'100%'}
           itemCount={this.props.posts.length}
-          itemData={{ posts: this.props.posts, dispatch: this.props.dispatch }}
+          itemData={{ 
+            posts: this.props.posts, 
+            onPostCheckedStateChange: this.props.onPostCheckedStateChange,
+            onRemovePost: this.props.onRemovePost 
+          }}
           itemSize={35}
         >
           { ItemRenderer }
@@ -43,4 +47,15 @@ Posts.propTypes = {
   posts: PropTypes.array.isRequired
 }
 
-export default connect()(Posts)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onPostCheckedStateChange: (idx) => {
+      dispatch(changePostCheckedState(idx))
+    },
+    onRemovePost: (idx) => {
+      dispatch(removePost(idx))
+    }
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Posts)
