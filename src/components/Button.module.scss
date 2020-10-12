@@ -1,0 +1,35 @@
+$width: 120px;
+$height: 30px;
+$color: #cacaca;
+
+@keyframes translating {
+    0%    { transform: translateX(0); }
+    50%   { transform: translateX(calc(100vw - #{$width})); }
+    100%  { transform: translateX(0); }
+}
+
+.btn {
+    position: absolute;
+    display: block;
+    width: $width;
+    height: $height;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: $color;
+    border-radius: 5px;
+    transition: all .2s linear;
+}
+
+.btn__disabled {
+    cursor: default;
+    background-color: darken($color: $color, $amount: 30);
+}
+
+.btn__animated {
+    animation: translating 20s ease-in-out infinite;
+}
+
+.btn__paused {
+    animation-play-state: paused;
+}
